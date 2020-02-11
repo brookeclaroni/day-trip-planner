@@ -24,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var attractionSeek : SeekBar
     private lateinit var attractionNum : TextView
     private lateinit var go : Button
+    private var destinationSet : Boolean = false
+    private var foodSet : Boolean = false
+    private var attractionSet : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +95,47 @@ class MainActivity : AppCompatActivity() {
             foodSpin.adapter = adapter
         }
 
+        //don't allow go to work until food is selected
+        foodSpin.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                foodSet = false;
+                go.isEnabled = false
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (position>0)
+                    foodSet = true
+                else
+                    foodSet = false;
+
+                if (destinationSet && foodSet && attractionSet)
+                    go.isEnabled = true
+                else
+                    go.isEnabled = false
+            }
+        }
+
+        //don't allow go to work until attraction is selected
+        attractionSpin.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                attractionSet = false;
+                go.isEnabled = false
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (position>0)
+                    attractionSet = true
+                else
+                    attractionSet = false;
+
+                if (destinationSet && foodSet && attractionSet)
+                    go.isEnabled = true
+                else
+                    go.isEnabled = false
+            }
+        }
+
+
         //populate the attraction spinner
         ArrayAdapter.createFromResource(
             this,
@@ -128,14 +172,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val textWatcher = object : TextWatcher {
-        override fun afterTextChanged(s: Editable) {}
+        override fun afterTextChanged(s: Editable) {
+        }
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             val inputtedDestination : String = destination.text.toString()
-            val enable: Boolean = inputtedDestination.trim().isNotEmpty()
-            go.isEnabled = enable
+            if(inputtedDestination.trim().isNotEmpty())
+                destinationSet = true
+            else
+                destinationSet = false
+
+            if (destinationSet && foodSet && attractionSet)
+                go.isEnabled = true
+            else
+                go.isEnabled = false
         }
     }
 }
