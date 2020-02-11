@@ -27,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private var destinationSet : Boolean = false
     private var foodSet : Boolean = false
     private var attractionSet : Boolean = false
+    private var foodIndex : Int = -1
+    private var attractionIndex : Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,16 +77,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
-
-        go.isEnabled = false
-
-        destination.addTextChangedListener(textWatcher)
-
-        val savedDestination = preferences.getString("destination", "")
-
-        destination.setText(savedDestination)
-
-
+        
         //populate the food spinner
         ArrayAdapter.createFromResource(
             this,
@@ -103,6 +96,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                foodIndex = position
+
                 if (position>0)
                     foodSet = true
                 else
@@ -112,6 +107,13 @@ class MainActivity : AppCompatActivity() {
                     go.isEnabled = true
                 else
                     go.isEnabled = false
+
+                val inputtedFoodIndex: Int = foodSpin.getSelectedItemPosition()
+
+                preferences
+                    .edit()
+                    .putInt("foodIndex", inputtedFoodIndex)
+                    .apply()
             }
         }
 
@@ -126,12 +128,19 @@ class MainActivity : AppCompatActivity() {
                 if (position>0)
                     attractionSet = true
                 else
-                    attractionSet = false;
+                    attractionSet = false
 
                 if (destinationSet && foodSet && attractionSet)
                     go.isEnabled = true
                 else
                     go.isEnabled = false
+
+                val inputtedAttractionIndex: Int = attractionSpin.getSelectedItemPosition()
+
+                preferences
+                    .edit()
+                    .putInt("attractionIndex", inputtedAttractionIndex)
+                    .apply()
             }
         }
 
@@ -168,7 +177,20 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seek: SeekBar) {}
         })
 
+        go.isEnabled = false
 
+        destination.addTextChangedListener(textWatcher)
+
+        val savedDestination = preferences.getString("destination", "")
+        val savedFoodIndex = preferences.getInt("foodIndex", 0)
+        val savedAttractionIndex = preferences.getInt("attractionIndex", 0)
+
+        //restore old data
+        destination.setText(savedDestination)
+        foodIndex = savedFoodIndex
+        foodSpin.setSelection(foodIndex)
+        attractionIndex = savedAttractionIndex
+        attractionSpin.setSelection(attractionIndex)
     }
 
     private val textWatcher = object : TextWatcher {
