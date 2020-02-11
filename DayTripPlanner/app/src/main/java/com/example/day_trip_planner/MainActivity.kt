@@ -1,39 +1,141 @@
 package com.example.day_trip_planner
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.View
 import android.widget.*
+import android.widget.SeekBar.OnSeekBarChangeListener
+import androidx.appcompat.app.AlertDialog
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var destination : EditText
+    private lateinit var foodSpin : Spinner
+    private lateinit var foodSeek : SeekBar
+    private lateinit var foodNum : TextView
+    private lateinit var attractionSpin : Spinner
+    private lateinit var attractionSeek : SeekBar
+    private lateinit var attractionNum : TextView
+    private lateinit var go : Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val preferences: SharedPreferences = getSharedPreferences(
+            "day-trip-planner",
+            Context.MODE_PRIVATE
+        )
+
+        // Tells Android which layout file should be used for this screen.
         setContentView(R.layout.activity_main)
 
-        val spinner1: Spinner = findViewById(R.id.nearby_food_spinner)
-        // Create an ArrayAdapter using the string array and a default spinner layout
+        // The IDs match what was set in the "id" field in our XML layout
+        destination = findViewById(R.id.destination_text_box)
+        go = findViewById(R.id.go_button)
+        foodSpin = findViewById(R.id.food_spinner)
+        foodSeek = findViewById(R.id.food_seek_bar)
+        foodNum = findViewById(R.id.food_num_results_text)
+        attractionSpin = findViewById(R.id.attractions_spinner)
+        attractionSeek = findViewById(R.id.attractions_seek_bar)
+        attractionNum = findViewById(R.id.attractions_num_results_text)
+
+        // Using a lambda to implement a View.OnClickListener interface.
+        go.setOnClickListener {
+            // Save destination credentials to file
+            val inputtedDestination: String = destination.text.toString()
+
+            preferences
+                .edit()
+                .putString("destination", inputtedDestination)
+                .apply()
+
+            val choices = listOf(destination.text.toString())
+            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice)
+            arrayAdapter.addAll(choices)
+
+            //display dialog box w radio button and toast  when go is clicked
+            AlertDialog.Builder(this)
+                .setTitle("Search Results")
+                .setAdapter(arrayAdapter) { dialog, which ->
+                    Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
+                }
+
+                .setNegativeButton("Cancel") { dialog, which ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+
+        go.isEnabled = false
+
+        destination.addTextChangedListener(textWatcher)
+
+        val savedDestination = preferences.getString("destination", "")
+
+        destination.setText(savedDestination)
+
+
+        //populate the food spinner
         ArrayAdapter.createFromResource(
             this,
             R.array.cuisine_choices,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
-            spinner1.adapter = adapter
+            foodSpin.adapter = adapter
         }
 
-        val spinner2: Spinner = findViewById(R.id.attractions_spinner)
-        // Create an ArrayAdapter using the string array and a default spinner layout
+        //populate the attraction spinner
         ArrayAdapter.createFromResource(
             this,
             R.array.attraction_choices,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
-            spinner2.adapter = adapter
+            attractionSpin.adapter = adapter
+        }
+
+        //dynamically update the food seek bar value
+        foodSeek.setOnSeekBarChangeListener(object :
+            OnSeekBarChangeListener {
+            override fun onProgressChanged(seek: SeekBar,
+                                           progress: Int, fromUser: Boolean) {
+                foodNum.text = "Number of Results ($progress):"
+            }
+            override fun onStartTrackingTouch(seek: SeekBar) {}
+            override fun onStopTrackingTouch(seek: SeekBar) {}
+        })
+
+        //dynamically update the attraction seek bar value
+        attractionSeek.setOnSeekBarChangeListener(object :
+            OnSeekBarChangeListener {
+            override fun onProgressChanged(seek: SeekBar,
+                                           progress: Int, fromUser: Boolean) {
+                attractionNum.text = "Number of Results ($progress):"
+            }
+            override fun onStartTrackingTouch(seek: SeekBar) {}
+            override fun onStopTrackingTouch(seek: SeekBar) {}
+        })
+
+
+    }
+
+    private val textWatcher = object : TextWatcher {
+        override fun afterTextChanged(s: Editable) {}
+
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            val inputtedDestination : String = destination.text.toString()
+            val enable: Boolean = inputtedDestination.trim().isNotEmpty()
+            go.isEnabled = enable
         }
     }
 }

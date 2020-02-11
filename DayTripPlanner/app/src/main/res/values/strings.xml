@@ -2,9 +2,8 @@
     <string name="app_name">Day Trip Planner</string>
     <string name="destination">Destination</string>
     <string name="food">Nearby Food</string>
-    <string name="food_results">Number of Results ():</string>
+    <string name="num_results">Number of Results (2):</string>
     <string name="attractions">Nearby Attractions</string>
-    <string name="attraction_results">Number of Results ():</string>
     <string name="go">GO</string>
     <string name="destination_hint">Location</string>
 

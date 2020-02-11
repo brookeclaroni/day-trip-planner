@@ -36,7 +36,7 @@
         app:layout_constraintTop_toBottomOf="@+id/destination_text" />
 
     <TextView
-        android:id="@+id/nearby_food_text"
+        android:id="@+id/food_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@+id/destination_text_box" />
 
     <Spinner
-        android:id="@+id/nearby_food_spinner"
+        android:id="@+id/food_spinner"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -57,7 +57,7 @@
         android:spinnerMode="dropdown"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nearby_food_text" />
+        app:layout_constraintTop_toBottomOf="@+id/food_text" />
 
     <TextView
         android:id="@+id/food_num_results_text"
@@ -65,9 +65,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/food_results"
+        android:text="@string/num_results"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nearby_food_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/food_spinner" />
 
     <SeekBar
         android:id="@+id/food_seek_bar"
@@ -79,7 +79,7 @@
         android:progress="2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/food_num_results_text"
-        app:layout_constraintTop_toBottomOf="@+id/nearby_food_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/food_spinner" />
 
     <Spinner
         android:id="@+id/attractions_spinner"
@@ -111,7 +111,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/attraction_results"
+        android:text="@string/num_results"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attractions_spinner" />
 
