@@ -1,34 +1,33 @@
 package com.example.day_trip_planner
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.app.AlertDialog
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var destination : EditText
     private lateinit var foodSpin : Spinner
     private lateinit var foodSeek : SeekBar
-    private lateinit var foodNum : TextView
+    private lateinit var foodNumText : TextView
     private lateinit var attractionSpin : Spinner
     private lateinit var attractionSeek : SeekBar
-    private lateinit var attractionNum : TextView
+    private lateinit var attractionNumText : TextView
     private lateinit var go : Button
     private var destinationSet : Boolean = false
     private var foodSet : Boolean = false
     private var attractionSet : Boolean = false
-    private var foodIndex : Int = -1
-    private var attractionIndex : Int = -1
+    private var foodIndex : Int = 0
+    private var attractionIndex : Int = 0
+    private var foodNum : Int = 2
+    private var attractionNum : Int = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +45,10 @@ class MainActivity : AppCompatActivity() {
         go = findViewById(R.id.go_button)
         foodSpin = findViewById(R.id.food_spinner)
         foodSeek = findViewById(R.id.food_seek_bar)
-        foodNum = findViewById(R.id.food_num_results_text)
+        foodNumText = findViewById(R.id.food_num_results_text)
         attractionSpin = findViewById(R.id.attractions_spinner)
         attractionSeek = findViewById(R.id.attractions_seek_bar)
-        attractionNum = findViewById(R.id.attractions_num_results_text)
+        attractionNumText = findViewById(R.id.attractions_num_results_text)
 
         // Using a lambda to implement a View.OnClickListener interface.
         go.setOnClickListener {
@@ -77,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
-        
+
         //populate the food spinner
         ArrayAdapter.createFromResource(
             this,
@@ -160,7 +159,15 @@ class MainActivity : AppCompatActivity() {
             OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar,
                                            progress: Int, fromUser: Boolean) {
-                foodNum.text = "Number of Results ($progress):"
+
+                val inputtedFoodNum: Int = progress
+
+                preferences
+                    .edit()
+                    .putInt("foodNum", inputtedFoodNum)
+                    .apply()
+
+                foodNumText.setText("Number of Results ($progress):")
             }
             override fun onStartTrackingTouch(seek: SeekBar) {}
             override fun onStopTrackingTouch(seek: SeekBar) {}
@@ -171,7 +178,12 @@ class MainActivity : AppCompatActivity() {
             OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar,
                                            progress: Int, fromUser: Boolean) {
-                attractionNum.text = "Number of Results ($progress):"
+                preferences
+                    .edit()
+                    .putInt("attractionNum", progress)
+                    .apply()
+
+                attractionNumText.setText ("Number of Results ($progress):")
             }
             override fun onStartTrackingTouch(seek: SeekBar) {}
             override fun onStopTrackingTouch(seek: SeekBar) {}
@@ -184,6 +196,8 @@ class MainActivity : AppCompatActivity() {
         val savedDestination = preferences.getString("destination", "")
         val savedFoodIndex = preferences.getInt("foodIndex", 0)
         val savedAttractionIndex = preferences.getInt("attractionIndex", 0)
+        val savedFoodNum = preferences.getInt("foodNum", 0)
+        val savedAttractionNum = preferences.getInt("attractionNum", 0)
 
         //restore old data
         destination.setText(savedDestination)
@@ -191,6 +205,10 @@ class MainActivity : AppCompatActivity() {
         foodSpin.setSelection(foodIndex)
         attractionIndex = savedAttractionIndex
         attractionSpin.setSelection(attractionIndex)
+        foodNum = savedFoodNum
+        foodSeek.setProgress(foodNum)
+        attractionNum = savedAttractionNum
+        attractionSeek.setProgress(attractionNum)
     }
 
     private val textWatcher = object : TextWatcher {
