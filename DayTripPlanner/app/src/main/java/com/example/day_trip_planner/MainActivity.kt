@@ -67,11 +67,11 @@ class MainActivity : AppCompatActivity() {
             //display dialog box w radio button and toast  when go is clicked
             AlertDialog.Builder(this)
                 .setTitle("Search Results")
-                .setAdapter(arrayAdapter) { dialog, which ->
+                .setAdapter(arrayAdapter) { _ , which ->
                     Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
                 }
 
-                .setNegativeButton("Cancel") { dialog, which ->
+                .setNegativeButton("Cancel") { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
@@ -97,15 +97,13 @@ class MainActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 foodIndex = position
 
+                foodSet = false;
                 if (position>0)
                     foodSet = true
-                else
-                    foodSet = false;
 
+                go.isEnabled = false
                 if (destinationSet && foodSet && attractionSet)
                     go.isEnabled = true
-                else
-                    go.isEnabled = false
 
                 val inputtedFoodIndex: Int = foodSpin.getSelectedItemPosition()
 
@@ -124,15 +122,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+                attractionSet = false
                 if (position>0)
                     attractionSet = true
-                else
-                    attractionSet = false
 
+                go.isEnabled = false
                 if (destinationSet && foodSet && attractionSet)
                     go.isEnabled = true
-                else
-                    go.isEnabled = false
 
                 val inputtedAttractionIndex: Int = attractionSpin.getSelectedItemPosition()
 
@@ -160,14 +157,12 @@ class MainActivity : AppCompatActivity() {
             override fun onProgressChanged(seek: SeekBar,
                                            progress: Int, fromUser: Boolean) {
 
-                val inputtedFoodNum: Int = progress
-
                 preferences
                     .edit()
-                    .putInt("foodNum", inputtedFoodNum)
+                    .putInt("foodNum", progress)
                     .apply()
 
-                foodNumText.setText("Number of Results ($progress):")
+                foodNumText.setText(getString(R.string.num_food_results, progress))
             }
             override fun onStartTrackingTouch(seek: SeekBar) {}
             override fun onStopTrackingTouch(seek: SeekBar) {}
@@ -183,7 +178,7 @@ class MainActivity : AppCompatActivity() {
                     .putInt("attractionNum", progress)
                     .apply()
 
-                attractionNumText.setText ("Number of Results ($progress):")
+                attractionNumText.setText(getString(R.string.num_attraction_results, progress))
             }
             override fun onStartTrackingTouch(seek: SeekBar) {}
             override fun onStopTrackingTouch(seek: SeekBar) {}
@@ -196,8 +191,8 @@ class MainActivity : AppCompatActivity() {
         val savedDestination = preferences.getString("destination", "")
         val savedFoodIndex = preferences.getInt("foodIndex", 0)
         val savedAttractionIndex = preferences.getInt("attractionIndex", 0)
-        val savedFoodNum = preferences.getInt("foodNum", 0)
-        val savedAttractionNum = preferences.getInt("attractionNum", 0)
+        val savedFoodNum = preferences.getInt("foodNum", 2)
+        val savedAttractionNum = preferences.getInt("attractionNum", 2)
 
         //restore old data
         destination.setText(savedDestination)
@@ -209,6 +204,9 @@ class MainActivity : AppCompatActivity() {
         foodSeek.setProgress(foodNum)
         attractionNum = savedAttractionNum
         attractionSeek.setProgress(attractionNum)
+        foodNumText.setText(getString(R.string.num_food_results, savedFoodNum))
+        attractionNumText.setText(getString(R.string.num_attraction_results, savedAttractionNum))
+
     }
 
     private val textWatcher = object : TextWatcher {
@@ -219,15 +217,14 @@ class MainActivity : AppCompatActivity() {
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             val inputtedDestination : String = destination.text.toString()
+
+            destinationSet = false
             if(inputtedDestination.trim().isNotEmpty())
                 destinationSet = true
-            else
-                destinationSet = false
 
+            go.isEnabled = false
             if (destinationSet && foodSet && attractionSet)
                 go.isEnabled = true
-            else
-                go.isEnabled = false
         }
     }
 }
