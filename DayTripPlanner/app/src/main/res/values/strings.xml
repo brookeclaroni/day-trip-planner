@@ -1,3 +1,28 @@
 <resources>
-    <string name="app_name">Day-Trip-Planner</string>
+    <string name="app_name">Day Trip Planner</string>
+    <string name="destination">Destination</string>
+    <string name="food">Nearby Food</string>
+    <string name="num_food_results">Number of Results (%1$d):</string>
+    <string name="num_attraction_results">Number of Results (%1$d):</string>
+    <string name="attractions">Nearby Attractions</string>
+    <string name="go">GO</string>
+    <string name="destination_hint">Location</string>
+
+    <string-array name="cuisine_choices">
+        <item>Select Food Type</item>
+        <item>Delis</item>
+        <item>Diners</item>
+        <item>Fast Food</item>
+        <item>Pizza</item>
+        <item>Sea Food</item>
+    </string-array>
+
+    <string-array name="attraction_choices">
+        <item>Select Attraction Type</item>
+        <item>Parks</item>
+        <item>Arcades</item>
+        <item>Cinema</item>
+        <item>Museums</item>
+        <item>Music Venues</item>
+    </string-array>
 </resources>
