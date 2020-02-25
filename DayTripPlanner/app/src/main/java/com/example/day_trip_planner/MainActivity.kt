@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.location.Geocoder
 import androidx.appcompat.app.AlertDialog
 
 class MainActivity : AppCompatActivity() {
@@ -66,12 +67,12 @@ class MainActivity : AppCompatActivity() {
 
             //display dialog box w radio button and toast  when go is clicked
             AlertDialog.Builder(this)
-                .setTitle("Search Results")
+                .setTitle(getString(R.string.search_results))
                 .setAdapter(arrayAdapter) { _ , which ->
                     Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
                 }
 
-                .setNegativeButton("Cancel") { dialog, _ ->
+                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         //don't allow go to work until food is selected
         foodSpin.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                foodSet = false;
+                foodSet = false
                 go.isEnabled = false
             }
 

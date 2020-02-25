@@ -7,6 +7,8 @@
     <string name="attractions">Nearby Attractions</string>
     <string name="go">GO</string>
     <string name="destination_hint">Location</string>
+    <string name="search_results">Search Results</string>
+    <string name="cancel">Cancel</string>
 
     <string-array name="cuisine_choices">
         <item>Select Food Type</item>
