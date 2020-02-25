@@ -10,6 +10,8 @@ import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.location.Geocoder
+import android.location.Address
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 
 class MainActivity : AppCompatActivity() {
@@ -61,21 +63,52 @@ class MainActivity : AppCompatActivity() {
                 .putString("destination", inputtedDestination)
                 .apply()
 
-            val choices = listOf(destination.text.toString())
-            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice)
-            arrayAdapter.addAll(choices)
+            //geocoding
+            val geocoder = Geocoder(this@MainActivity)
 
-            //display dialog box w radio button and toast  when go is clicked
-            AlertDialog.Builder(this)
-                .setTitle(getString(R.string.search_results))
-                .setAdapter(arrayAdapter) { _ , which ->
-                    Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
+            // The Geocoder throws exceptions if there's a connectivity issue, so wrap it in a try-catch
+            val results: List<Address> = try {
+                geocoder.getFromLocationName(
+                    inputtedDestination,
+                    4
+                )
+            } catch(exception: Exception) {
+                exception.printStackTrace()
+                Log.e("MainActivity", "Failed to retrieve results: $exception")
+                listOf<Address>()
+            }
+
+            if (results.isNotEmpty()) {
+                val firstResult: Address = results.first()
+                val streetAddress = firstResult.getAddressLine(0)
+                val choices = mutableListOf(streetAddress.toString())
+
+                results.forEach {
+                    if (it != firstResult)
+                    {
+                        choices.add(it.getAddressLine(0).toString())
+                    }
                 }
 
-                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+                val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice)
+                arrayAdapter.addAll(choices)
+
+                //display dialog box w radio button and toast  when go is clicked
+                AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.search_results))
+                    .setAdapter(arrayAdapter) { _ , which ->
+                        Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
+                    }
+
+                    .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+            else {
+                Toast.makeText(this, "Error: Invalid address", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         //populate the food spinner
