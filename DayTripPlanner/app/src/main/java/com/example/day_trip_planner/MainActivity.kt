@@ -1,6 +1,7 @@
 package com.example.day_trip_planner
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -96,17 +97,20 @@ class MainActivity : AppCompatActivity() {
                 //display dialog box w radio button and toast  when go is clicked
                 AlertDialog.Builder(this)
                     .setTitle(getString(R.string.search_results))
-                    .setAdapter(arrayAdapter) { _ , which ->
-                        Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
+                    .setAdapter(arrayAdapter) { _ , _ ->
+                        //Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, DetailsActivity::class.java)
+                        startActivity(intent)
                     }
 
                     .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
                         dialog.dismiss()
                     }
                     .show()
+
             }
             else {
-                Toast.makeText(this, "Error: Invalid address", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error: Invalid address - $inputtedDestination", Toast.LENGTH_SHORT).show()
             }
 
         }
