@@ -14,6 +14,7 @@ import android.location.Geocoder
 import android.location.Address
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import org.jetbrains.anko.doAsync
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,16 +69,17 @@ class MainActivity : AppCompatActivity() {
             val geocoder = Geocoder(this@MainActivity)
 
             // The Geocoder throws exceptions if there's a connectivity issue, so wrap it in a try-catch
-            val results: List<Address> = try {
-                geocoder.getFromLocationName(
-                    inputtedDestination,
-                    4
-                )
-            } catch(exception: Exception) {
-                exception.printStackTrace()
-                Log.e("MainActivity", "Failed to retrieve results: $exception")
-                listOf<Address>()
-            }
+            doAsync {
+                val results: List<Address> = try {
+                    geocoder.getFromLocationName(
+                        inputtedDestination,
+                        4
+                    )
+                } catch (exception: Exception) {
+                    exception.printStackTrace()
+                    Log.e("MainActivity", "Failed to retrieve results: $exception")
+                    listOf<Address>()
+                }
 
             if (results.isNotEmpty()) {
                 val firstResult: Address = results.first()
@@ -91,26 +93,32 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice)
+                val arrayAdapter = ArrayAdapter<String>(this@MainActivity, android.R.layout.select_dialog_singlechoice)
                 arrayAdapter.addAll(choices)
 
                 //display dialog box w radio button and toast  when go is clicked
-                AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.search_results))
-                    .setAdapter(arrayAdapter) { _ , _ ->
-                        //Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, DetailsActivity::class.java)
-                        startActivity(intent)
-                    }
+                runOnUiThread {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle(getString(R.string.search_results))
+                        .setAdapter(arrayAdapter) { _ , _ ->
+                            //Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@MainActivity, DetailsActivity::class.java)
+                            startActivity(intent)
+                        }
 
-                    .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .show()
+                        .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+
+                }
 
             }
             else {
-                Toast.makeText(this, "Error: Invalid address", Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    Toast.makeText(this@MainActivity, "Error: Invalid address", Toast.LENGTH_SHORT).show()
+                }
+            }
             }
 
         }
