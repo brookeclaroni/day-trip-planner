@@ -1,5 +1,7 @@
 package com.example.day_trip_planner
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +28,30 @@ class EntryAdapter(val entries: List<Entry>) : RecyclerView.Adapter<EntryAdapter
 
         if(currentEntry.phone == null)
             holder.phoneButton.isInvisible = true
-        //holder.phoneButton.
+        else
+            holder.phoneButton.setOnClickListener{
+                try {
+                    val phoneIntent: Intent = Uri.parse("tel:" + currentEntry.phone).let { number ->
+                        Intent(Intent.ACTION_DIAL, number)
+                    }
+                    it.getContext().startActivity(phoneIntent)
+                }
+                catch(e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        holder.urlButton.setOnClickListener{
+            try {
+                val urlIntent: Intent = Uri.parse(currentEntry.url).let { webpage ->
+                    Intent(Intent.ACTION_VIEW, webpage)
+                }
+                it.getContext().startActivity(urlIntent)
+            }
+            catch(e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     override fun getItemCount(): Int {

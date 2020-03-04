@@ -19,8 +19,6 @@ class DetailsActivity : AppCompatActivity() {
         val entries = getFakeEntries()
         val adapter = EntryAdapter(entries)
         recyclerView.adapter = adapter
-
-
     }
 
     fun getFakeEntries(): List<Entry> {

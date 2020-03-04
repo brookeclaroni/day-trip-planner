@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 
             }
             else {
-                Toast.makeText(this, "Error: Invalid address - $inputtedDestination", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error: Invalid address", Toast.LENGTH_SHORT).show()
             }
 
         }
