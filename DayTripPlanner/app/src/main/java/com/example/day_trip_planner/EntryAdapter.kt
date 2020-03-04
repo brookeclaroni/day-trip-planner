@@ -3,7 +3,10 @@ package com.example.day_trip_planner
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.RatingBar
+import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 
 class EntryAdapter(val entries: List<Entry>) : RecyclerView.Adapter<EntryAdapter.ViewHolder>(){
@@ -18,10 +21,12 @@ class EntryAdapter(val entries: List<Entry>) : RecyclerView.Adapter<EntryAdapter
 
         holder.name.setText(currentEntry.name)
         holder.pricePoint.setText(currentEntry.pricePoint)
-        holder.rating.setText(currentEntry.rating)
         holder.address.setText(currentEntry.address)
-        holder.phone.setText(currentEntry.phone)
-        holder.url.setText(currentEntry.url)
+        holder.ratingBar.setRating(currentEntry.rating.toFloat())
+
+        if(currentEntry.phone == null)
+            holder.phoneButton.isInvisible = true
+        //holder.phoneButton.
     }
 
     override fun getItemCount(): Int {
@@ -32,9 +37,9 @@ class EntryAdapter(val entries: List<Entry>) : RecyclerView.Adapter<EntryAdapter
 
         val name: TextView = itemView.findViewById(R.id.name)
         val pricePoint: TextView = itemView.findViewById(R.id.pricePoint)
-        val rating: TextView = itemView.findViewById(R.id.rating)
         val address: TextView = itemView.findViewById(R.id.address)
-        val phone: TextView = itemView.findViewById(R.id.phone)
-        val url: TextView = itemView.findViewById(R.id.url)
+        val ratingBar: RatingBar = itemView.findViewById(R.id.ratingBar)
+        val phoneButton: ImageButton = itemView.findViewById(R.id.phoneButton)
+        val urlButton: ImageButton = itemView.findViewById(R.id.urlButton)
     }
 }
