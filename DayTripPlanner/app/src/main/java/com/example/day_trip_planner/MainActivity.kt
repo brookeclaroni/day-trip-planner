@@ -1,6 +1,7 @@
 package com.example.day_trip_planner
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,7 +10,11 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
+import android.location.Geocoder
+import android.location.Address
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import org.jetbrains.anko.doAsync
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,21 +65,62 @@ class MainActivity : AppCompatActivity() {
                 .putString("destination", inputtedDestination)
                 .apply()
 
-            val choices = listOf(destination.text.toString())
-            val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice)
-            arrayAdapter.addAll(choices)
+            //geocoding
+            val geocoder = Geocoder(this@MainActivity)
 
-            //display dialog box w radio button and toast  when go is clicked
-            AlertDialog.Builder(this)
-                .setTitle("Search Results")
-                .setAdapter(arrayAdapter) { _ , which ->
-                    Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
+            // The Geocoder throws exceptions if there's a connectivity issue, so wrap it in a try-catch
+            doAsync {
+                val results: List<Address> = try {
+                    geocoder.getFromLocationName(
+                        inputtedDestination,
+                        4
+                    )
+                } catch (exception: Exception) {
+                    exception.printStackTrace()
+                    Log.e("MainActivity", "Failed to retrieve results: $exception")
+                    listOf<Address>()
                 }
 
-                .setNegativeButton("Cancel") { dialog, _ ->
-                    dialog.dismiss()
+            if (results.isNotEmpty()) {
+                val firstResult: Address = results.first()
+                val streetAddress = firstResult.getAddressLine(0)
+                val choices = mutableListOf(streetAddress.toString())
+
+                results.forEach {
+                    if (it != firstResult)
+                    {
+                        choices.add(it.getAddressLine(0).toString())
+                    }
                 }
-                .show()
+
+                val arrayAdapter = ArrayAdapter<String>(this@MainActivity, android.R.layout.select_dialog_singlechoice)
+                arrayAdapter.addAll(choices)
+
+                //display dialog box w radio button and toast  when go is clicked
+                runOnUiThread {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle(getString(R.string.search_results))
+                        .setAdapter(arrayAdapter) { _ , _ ->
+                            //Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@MainActivity, DetailsActivity::class.java)
+                            startActivity(intent)
+                        }
+
+                        .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+
+                }
+
+            }
+            else {
+                runOnUiThread {
+                    Toast.makeText(this@MainActivity, "Error: Invalid address", Toast.LENGTH_SHORT).show()
+                }
+            }
+            }
+
         }
 
         //populate the food spinner
@@ -90,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         //don't allow go to work until food is selected
         foodSpin.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                foodSet = false;
+                foodSet = false
                 go.isEnabled = false
             }
 
