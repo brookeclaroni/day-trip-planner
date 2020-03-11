@@ -54,9 +54,5 @@ class DetailsActivity : AppCompatActivity() {
                 }
             }
         }
-
-        //Toast.makeText(this, "You asked for ${intent.getIntExtra("FOOD_NUM", 0)} ${intent.getStringExtra("FOOD_TYPE")}\n and ${intent.getIntExtra("ATTR_NUM", 0)} ${intent.getStringExtra("ATTR_TYPE")}", Toast.LENGTH_SHORT).show()
-
-
     }
 }

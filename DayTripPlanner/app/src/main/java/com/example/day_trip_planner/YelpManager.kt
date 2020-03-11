@@ -1,7 +1,5 @@
 package com.example.day_trip_planner
 
-import android.content.res.Resources
-import android.widget.Toast
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
@@ -35,9 +33,6 @@ class YelpManager {
         limit: Int?,
         apiKey: String
     ): MutableList<Entry> {
-        //val radius = "1500m"
-        //val apiKey : String = Resources.getSystem().getString(R.string.yelp_key)
-        //Toast.makeText(this, "$apiKey", Toast.LENGTH_LONG).show()
 
         val request = Request.Builder()
             .url("https://api.yelp.com/v3/businesses/search?latitude=$latitude&longitude=$longitude&categories=$category&limit=$limit")
@@ -65,7 +60,8 @@ class YelpManager {
                    currPricePoint = curr.getString("price")
                 val currRating = curr.getInt("rating")
                 val loc = curr.getJSONObject("location")
-                val currAddress = "${loc.getString("address1")}, ${loc.getString("city")}, ${loc.getString("state")} ${loc.getString("zip_code")}"
+                val currAddress = loc.getString("address1")
+                val currAddress2 = "${loc.getString("city")} ${loc.getString("zip_code")}"
                 var currPhone : String? = null
                 if(curr.has("phone"))
                     currPhone = curr.getString("phone")
@@ -79,6 +75,7 @@ class YelpManager {
                     pricePoint = currPricePoint,
                     rating = currRating.toString(),
                     address = currAddress,
+                    address2 = currAddress2,
                     phone = currPhone,
                     url = currUrl,
                     lat = currLat,

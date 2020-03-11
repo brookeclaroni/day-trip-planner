@@ -5,25 +5,14 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import android.location.Address
-import android.location.Geocoder
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.Circle
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.widget.Button
+import com.google.android.gms.maps.model.*
 import org.jetbrains.anko.doAsync
-
-//import sun.jvm.hotspot.utilities.IntArray
 
 
 
@@ -85,6 +74,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         doAsync {
             val yelpManager = YelpManager()
+            val metroManager = MetroManager()
+            val metroNameManager = MetroNameManager()
             try {
 
                 val foodEntries = yelpManager.retrieveEntries(lat, lon, foodType.toLowerCase(), foodNum, getString(R.string.yelp_key))
@@ -94,18 +85,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     foodEntries.forEach{
                         runOnUiThread {
-                            mMap.addMarker(MarkerOptions().position(LatLng(it.lat, it.lon)).title(it.name))
+                            mMap.addMarker(MarkerOptions().position(LatLng(it.lat, it.lon)).title(it.name).icon(BitmapDescriptorFactory.defaultMarker(
+                                BitmapDescriptorFactory.HUE_GREEN)))
                         }
                     }
                 }
+
                 val attrEntries = yelpManager.retrieveEntries(lat, lon, attrType.toLowerCase(), attrNum, getString(R.string.yelp_key))
                 if (attrEntries.size>0) {
                     attrEntries.forEach{
                         runOnUiThread {
-                            mMap.addMarker(MarkerOptions().position(LatLng(it.lat, it.lon)).title(it.name))
+                            mMap.addMarker(MarkerOptions().position(LatLng(it.lat, it.lon)).title(it.name).icon(BitmapDescriptorFactory.defaultMarker(
+                                BitmapDescriptorFactory.HUE_BLUE)))
                         }
                     }
                 }
+
+                var metroStation = metroManager.retrieveEntry(lat, lon, getString(R.string.metro_key))
+
+                if (metroStation != null) {
+                    runOnUiThread {
+                            mMap.addMarker(MarkerOptions().position(LatLng(metroStation.lat, metroStation.lon)).title(metroStation.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)))
+
+                    }
+                }
+
             } catch (exception: Exception) {
                 exception.printStackTrace()
                 runOnUiThread {

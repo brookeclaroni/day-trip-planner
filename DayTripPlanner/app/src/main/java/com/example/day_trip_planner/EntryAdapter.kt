@@ -24,6 +24,7 @@ class EntryAdapter(val entries: List<Entry>) : RecyclerView.Adapter<EntryAdapter
         holder.name.setText(currentEntry.name)
         holder.pricePoint.setText(currentEntry.pricePoint)
         holder.address.setText(currentEntry.address)
+        holder.address2.setText(currentEntry.address2)
         holder.ratingBar.setRating(currentEntry.rating.toFloat())
 
         if(currentEntry.phone == null)
@@ -63,6 +64,7 @@ class EntryAdapter(val entries: List<Entry>) : RecyclerView.Adapter<EntryAdapter
         val name: TextView = itemView.findViewById(R.id.name)
         val pricePoint: TextView = itemView.findViewById(R.id.pricePoint)
         val address: TextView = itemView.findViewById(R.id.address)
+        val address2: TextView = itemView.findViewById(R.id.address2)
         val ratingBar: RatingBar = itemView.findViewById(R.id.ratingBar)
         val phoneButton: ImageButton = itemView.findViewById(R.id.phoneButton)
         val urlButton: ImageButton = itemView.findViewById(R.id.urlButton)

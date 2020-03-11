@@ -18,9 +18,9 @@
         <item>Select Food Type</item>
         <item>Delis</item>
         <item>Diners</item>
-        <item>Fast Food</item>
+        <item>Bakeries</item>
         <item>Pizza</item>
-        <item>Sea Food</item>
+        <item>Desserts</item>
     </string-array>
 
     <string-array name="attraction_choices">
@@ -29,7 +29,7 @@
         <item>Arcades</item>
         <item>Cinema</item>
         <item>Museums</item>
-        <item>Music Venues</item>
+        <item>Farms</item>
     </string-array>
 
 </resources>
