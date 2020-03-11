@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+
+api_keys.xml
+google_maps_api.xml

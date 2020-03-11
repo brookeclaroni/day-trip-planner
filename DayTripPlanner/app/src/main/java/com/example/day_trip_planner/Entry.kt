@@ -6,5 +6,7 @@ data class Entry(
     val rating: String,
     val address: String,
     val phone: String?,
-    val url: String
+    val url: String,
+    val lat : Double,
+    val lon : Double
 )

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.jetbrains.anko.doAsync
 
 class DetailsActivity : AppCompatActivity() {
 
@@ -17,58 +18,45 @@ class DetailsActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val entries = getFakeEntries()
-        val adapter = EntryAdapter(entries)
-        recyclerView.adapter = adapter
+        val lat = intent.getDoubleExtra("LATITUDE", 0.0)
+        val lon = intent.getDoubleExtra("LONGITUDE", 0.0)
+        val foodType = intent.getStringExtra("FOOD_TYPE")
+        val foodLimit = intent.getIntExtra("FOOD_NUM", 0)
+        val attrType = intent.getStringExtra("ATTR_TYPE")
+        val attrLimit = intent.getIntExtra("ATTR_NUM", 0)
 
-        if (entries.isEmpty())
-        {
-            Toast.makeText(this, "There are no results.", Toast.LENGTH_LONG).show()
+        doAsync {
+            val yelpManager = YelpManager()
+            try {
+                val entries = yelpManager.retrieveEntries(lat, lon, foodType.toLowerCase(), foodLimit, getString(R.string.yelp_key))
+                val entries2 =  yelpManager.retrieveEntries(lat, lon, attrType.toLowerCase(), attrLimit, getString(R.string.yelp_key))
+                entries.addAll(entries2)
+                entries.sortByDescending{it.rating}
+
+                runOnUiThread {
+                    val adapter = EntryAdapter(entries)
+                    recyclerView.adapter = adapter
+                }
+                if (entries.isEmpty())
+                {
+                    runOnUiThread {
+                        Toast.makeText(this@DetailsActivity, "There are no results.", Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                runOnUiThread {
+                    Toast.makeText(
+                        this@DetailsActivity,
+                        "Failed to retrieve details",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
-    }
 
-    fun getFakeEntries(): List<Entry> {
-        return listOf(
-            Entry(
-                name = "Ford’s Theatre",
-                pricePoint = null,
-                rating = "4.5",
-                address = "511 10th St NW, Washington, DC 20004",
-                phone = "+12023474833",
-                url = "https://www.yelp.com/biz/fords-theatre-washington?adjust_creative=keu-kOIeln4R7XPAEsPSYg&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=keu-kOIeln4R7XPAEsPSYg"
-            ),
-            Entry(
-                name = "Ford’s Theatre 2",
-                pricePoint = "$$",
-                rating = "4.0",
-                address = "511 10th St NW, Washington, DC 20004",
-                phone = "+12023474833",
-                url = "https://www.yelp.com/biz/fords-theatre-washington?adjust_creative=keu-kOIeln4R7XPAEsPSYg&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=keu-kOIeln4R7XPAEsPSYg"
-            ),
-            Entry(
-                name = "Ford’s Theatre 3",
-                pricePoint = "$$$",
-                rating = "2.5",
-                address = "511 10th St NW, Washington, DC 20004",
-                phone = null,
-                url = "https://www.yelp.com/biz/fords-theatre-washington?adjust_creative=keu-kOIeln4R7XPAEsPSYg&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=keu-kOIeln4R7XPAEsPSYg"
-            ),
-            Entry(
-                name = "Ford’s Theatre 4",
-                pricePoint = null,
-                rating = "1.25",
-                address = "511 10th St NW, Washington, DC 20004",
-                phone = null,
-                url = "https://www.yelp.com/biz/fords-theatre-washington?adjust_creative=keu-kOIeln4R7XPAEsPSYg&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=keu-kOIeln4R7XPAEsPSYg"
-            ),
-            Entry(
-                name = "Wicked Waffle",
-                pricePoint = "$",
-                rating = "4",
-                address = "1712 I St NW, Washington, DC 20006",
-                phone = "+12029442700",
-                url = "https://www.yelp.com/biz/wicked-waffle-washington"
-            )
-        )
+        //Toast.makeText(this, "You asked for ${intent.getIntExtra("FOOD_NUM", 0)} ${intent.getStringExtra("FOOD_TYPE")}\n and ${intent.getIntExtra("ATTR_NUM", 0)} ${intent.getStringExtra("ATTR_TYPE")}", Toast.LENGTH_SHORT).show()
+
+
     }
 }

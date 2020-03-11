@@ -11,6 +11,8 @@
     <string name="cancel">Cancel</string>
     <string name="phone_icon">[Phone Icon]</string>
     <string name="url_icon">[URL Icon]</string>
+    <string name="title_activity_maps">Day Trip Planner</string>
+    <string name="view_nearby">View Nearby</string>
 
     <string-array name="cuisine_choices">
         <item>Select Food Type</item>
@@ -29,4 +31,5 @@
         <item>Museums</item>
         <item>Music Venues</item>
     </string-array>
+
 </resources>
