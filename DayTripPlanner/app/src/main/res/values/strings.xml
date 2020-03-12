@@ -13,6 +13,15 @@
     <string name="url_icon">[URL Icon]</string>
     <string name="title_activity_maps">Day Trip Planner</string>
     <string name="view_nearby">View Nearby</string>
+    <string name="invalid_address">View Error: Invalid address</string>
+    <string name="no_results">There are no results.</string>
+    <string name="yelp_fail">Failed to retrieve Yelp details</string>
+    <string name="no_food">No food entries found nearby.  </string>
+    <string name="no_attr">No attraction entries found nearby.  </string>
+    <string name="no_metro">No metro station found nearby.</string>
+    <string name="food_error">Error retrieving food results.\n</string>
+    <string name="attr_error">Error retrieving attraction results.\n</string>
+    <string name="metro_error">Error retrieving metro result.</string>
 
     <string-array name="cuisine_choices">
         <item>Select Food Type</item>

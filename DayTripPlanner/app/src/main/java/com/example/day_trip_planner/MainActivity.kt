@@ -3,7 +3,6 @@ package com.example.day_trip_planner
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -126,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 else {
                     runOnUiThread {
-                        Toast.makeText(this@MainActivity, "Error: Invalid address", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, getString(R.string.invalid_address), Toast.LENGTH_SHORT).show()
                     }
                 }
             }

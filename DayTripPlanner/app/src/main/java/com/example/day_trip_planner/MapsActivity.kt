@@ -4,6 +4,8 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -11,6 +13,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import android.widget.Button
+import android.widget.ProgressBar
 import com.google.android.gms.maps.model.*
 import org.jetbrains.anko.doAsync
 
@@ -26,6 +29,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
+
+        //line of code from https://stackoverflow.com/questions/36918219/how-to-disable-user-interaction-while-progressbar-is-visible-in-android?noredirect=1&lq=1
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+
         mapFragment.getMapAsync(this)
 
         val detailsButton: Button = findViewById(R.id.detailsButton)
@@ -63,7 +72,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val currentLocationString = intent.getStringExtra("LOCATION")
         val lat: Double = intent.getDoubleExtra("LATITUDE", 0.0)
         val lon: Double = intent.getDoubleExtra("LONGITUDE",0.0)
-        var mark = LatLng(lat, lon)
+        val mark = LatLng(lat, lon)
         mMap.addMarker(MarkerOptions().position(mark).title(currentLocationString))
 
 
@@ -75,14 +84,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         doAsync {
             val yelpManager = YelpManager()
             val metroManager = MetroManager()
-            val metroNameManager = MetroNameManager()
+            var errorMessage : String = ""
+            var foodError = true
+            var attrError = true
+            var metroError = true
+
             try {
 
                 val foodEntries = yelpManager.retrieveEntries(lat, lon, foodType.toLowerCase(), foodNum, getString(R.string.yelp_key))
 
                 if (foodEntries.size>0) {
-
-
+                    foodError = false
                     foodEntries.forEach{
                         runOnUiThread {
                             mMap.addMarker(MarkerOptions().position(LatLng(it.lat, it.lon)).title(it.name).icon(BitmapDescriptorFactory.defaultMarker(
@@ -90,9 +102,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                     }
                 }
+                else
+                    errorMessage += getString(R.string.no_food)
 
                 val attrEntries = yelpManager.retrieveEntries(lat, lon, attrType.toLowerCase(), attrNum, getString(R.string.yelp_key))
                 if (attrEntries.size>0) {
+                    attrError = false
                     attrEntries.forEach{
                         runOnUiThread {
                             mMap.addMarker(MarkerOptions().position(LatLng(it.lat, it.lon)).title(it.name).icon(BitmapDescriptorFactory.defaultMarker(
@@ -100,26 +115,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                     }
                 }
+                else
+                    errorMessage += getString(R.string.no_attr)
 
-                var metroStation = metroManager.retrieveEntry(lat, lon, getString(R.string.metro_key))
+                val metroStation : MetroStation? = metroManager.retrieveEntry(lat, lon, getString(R.string.metro_key))
 
                 if (metroStation != null) {
+                    metroError = false
                     runOnUiThread {
                             mMap.addMarker(MarkerOptions().position(LatLng(metroStation.lat, metroStation.lon)).title(metroStation.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)))
-
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                     }
+                }
+                else
+                    errorMessage += getString(R.string.no_metro)
+
+                if (!errorMessage.equals(""))
+                {
+                    Toast.makeText(this@MapsActivity, errorMessage, Toast.LENGTH_LONG).show()
                 }
 
             } catch (exception: Exception) {
                 exception.printStackTrace()
                 runOnUiThread {
+                    var exceptionError : String = ""
+                    if(foodError)
+                        exceptionError += getString(R.string.food_error)
+                    if(attrError)
+                        exceptionError += getString(R.string.attr_error)
+                    if(metroError)
+                        exceptionError += getString(R.string.metro_error)
                     Toast.makeText(
                         this@MapsActivity,
-                        "Failed to retrieve destinations",
+                        exceptionError,
                         Toast.LENGTH_LONG
                     ).show()
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
                 }
             }
+
+            //done loading since networking is completed
+            val progBar : ProgressBar = findViewById(R.id.progressBar)
+            progBar.setVisibility(View.GONE)
 
         }
         val zoomLevel = 13.5f

@@ -1,6 +1,5 @@
 package com.example.day_trip_planner
 
-import com.google.android.gms.maps.model.LatLng
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor

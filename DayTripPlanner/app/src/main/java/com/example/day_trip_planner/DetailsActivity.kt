@@ -29,26 +29,31 @@ class DetailsActivity : AppCompatActivity() {
             val yelpManager = YelpManager()
             try {
                 val entries = yelpManager.retrieveEntries(lat, lon, foodType.toLowerCase(), foodLimit, getString(R.string.yelp_key))
-                val entries2 =  yelpManager.retrieveEntries(lat, lon, attrType.toLowerCase(), attrLimit, getString(R.string.yelp_key))
-                entries.addAll(entries2)
-                entries.sortByDescending{it.rating}
+                val attrEntries =  yelpManager.retrieveEntries(lat, lon, attrType.toLowerCase(), attrLimit, getString(R.string.yelp_key))
+                entries.addAll(attrEntries)
 
-                runOnUiThread {
-                    val adapter = EntryAdapter(entries)
-                    recyclerView.adapter = adapter
-                }
                 if (entries.isEmpty())
                 {
                     runOnUiThread {
-                        Toast.makeText(this@DetailsActivity, "There are no results.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@DetailsActivity, getString(R.string.no_results), Toast.LENGTH_LONG).show()
                     }
                 }
+                else{
+                    //sort results by most to least stars
+                    entries.sortByDescending{it.rating}
+
+                    runOnUiThread {
+                        val adapter = EntryAdapter(entries)
+                        recyclerView.adapter = adapter
+                    }
+                }
+
             } catch (exception: Exception) {
                 exception.printStackTrace()
                 runOnUiThread {
                     Toast.makeText(
                         this@DetailsActivity,
-                        "Failed to retrieve details",
+                        getString(R.string.yelp_fail),
                         Toast.LENGTH_LONG
                     ).show()
                 }
