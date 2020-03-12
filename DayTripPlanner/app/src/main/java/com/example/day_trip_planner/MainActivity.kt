@@ -83,6 +83,7 @@ class MainActivity : AppCompatActivity() {
 
             if (results.isNotEmpty()) {
                 val firstResult: Address = results.first()
+                val addressList = mutableListOf(firstResult)
                 val streetAddress = firstResult.getAddressLine(0)
                 val choices = mutableListOf(streetAddress.toString())
 
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity() {
                     if (it != firstResult)
                     {
                         choices.add(it.getAddressLine(0).toString())
+                        addressList.add(it)
                     }
                 }
 
@@ -100,9 +102,16 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     AlertDialog.Builder(this@MainActivity)
                         .setTitle(getString(R.string.search_results))
-                        .setAdapter(arrayAdapter) { _ , _ ->
+                        .setAdapter(arrayAdapter) { _ , which ->
                             //Toast.makeText(this, "You picked: ${choices[which]}", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@MainActivity, DetailsActivity::class.java)
+                            val intent = Intent(this@MainActivity, MapsActivity::class.java)
+                            intent.putExtra("LOCATION", choices[which])
+                            intent.putExtra("LATITUDE", addressList[which].latitude)
+                            intent.putExtra("LONGITUDE", addressList[which].longitude)
+                            intent.putExtra("FOOD_NUM",   foodSeek.progress)
+                            intent.putExtra("ATTR_NUM",   attractionSeek.progress)
+                            intent.putExtra("FOOD_TYPE",   foodSpin.selectedItem.toString())
+                            intent.putExtra("ATTR_TYPE",   attractionSpin.selectedItem.toString())
                             startActivity(intent)
                         }
 
@@ -111,14 +120,14 @@ class MainActivity : AppCompatActivity() {
                         }
                         .show()
 
-                }
+                    }
 
-            }
-            else {
-                runOnUiThread {
-                    Toast.makeText(this@MainActivity, "Error: Invalid address", Toast.LENGTH_SHORT).show()
                 }
-            }
+                else {
+                    runOnUiThread {
+                        Toast.makeText(this@MainActivity, getString(R.string.invalid_address), Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
         }
