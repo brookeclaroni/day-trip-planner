@@ -1,10 +1,9 @@
 # CSCI 4237 - Project 1 - Day Trip Planner
 Day Trip Planner is a simple app to help plan interesting things to do near a desired location.
 
-## Getting Started
-1. Clone this repo to your local machine.
-2. Create a new Android Studio project. During the initial project setup, set the `Save location` to the folder that was created when you cloned this repo (e.g. so you can commit your project back into this repo).
-3. Use git to add, commit, and push your new project to the `master` branch - now you have your start pointing set locally and on GitHub! You are now ready to get started.
-4. Don't forget to branch before you create commits - you'll need to create Pull Requests for the major project deliverables.
+## Full Description
+Day Trip Planner is a simple app to help plan interesting things to do near a desired location. Often times you may going to a different part of town to hang out with friends, see a sporting event or concert, or just to sight-see. It can be helpful to see what other activities are available around this new area. You may also be interested in what transportation is available nearby, such as the closest Metro station.
+The app features the ability to enter the address of a desired destination and select restaurant and attraction types to search for nearby that address. Matching restaurants, attractions, and the nearest Metro station are all displayed on an in-app map. For each of the restaurants and attractions, additional details can be viewed (e.g. Yelp rating, price point, address, etc.) as well as the ability to call the business and / or view their full details on Yelp.
+The project demonstrates the Android concepts of SharedPreferences, RecyclerViews, RESTful APIs, working with data from different systems / companies, Google Maps, error handling, Intents, and a variety of UI components.
 
-View the [Project Requirements Document](https://drive.google.com/open?id=13W5QWewU-XsAD4d4pQCqrIYLn027aj_sTTaBnuAreuY) for full details!
+## UI Snapshots
