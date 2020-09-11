@@ -7,3 +7,4 @@ The app features the ability to enter the address of a desired destination and s
 The project demonstrates the Android concepts of SharedPreferences, RecyclerViews, RESTful APIs, working with data from different systems / companies, Google Maps, error handling, Intents, and a variety of UI components.
 
 ## UI Snapshots
+![UI Image](https://github.com/brookeclaroni/day-trip-planner/blob/master/UI%20Snapshots.png)
